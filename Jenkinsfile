@@ -1,9 +1,8 @@
 pipeline {
-    agent any 
-    stages {
-        stage('Compile and Clean') { 
+    agent none
+     stages {
+      stage('Compile and Clean') { 
             steps {
-
                 sh "mvn clean compile"
             }
         }
@@ -19,41 +18,31 @@ pipeline {
             }     
         }
 
-        stage('deploy') { 
+          stage('package') { 
             steps {
                 sh "mvn package"
             }
         }
 
-
         stage('Build Docker image'){
             steps {
-                sh 'docker build -t anvbhaskar/docker_jenkins_pipeline:${BUILD_NUMBER} .'
+                sh 'docker build -t sanjeevsfive/maven:${BUILD_NUMBER} .'
             }
         }
-
         stage('Docker Login'){
-            
             steps {
-                 withCredentials([string(credentialsId: 'DockerId', variable: 'Dockerpwd')]) {
-                    sh "docker login -u anvbhaskar -p ${Dockerpwd}"
+                withCredentials([string(credentialsId: 'docker-psswd', variable: 'doker-passwd')]) {
+                     sh "docker login -u sanjeevsfive -p ${doker-passwd}"
                 }
             }                
         }
 
         stage('Docker Push'){
             steps {
-                sh 'docker push anvbhaskar/docker_jenkins_pipeline:${BUILD_NUMBER}'
+                sh 'docker push sanjeevsfive/maven:${BUILD_NUMBER}'
             }
         }
-        
-        stage('Docker deploy'){
-            steps {
-                sh 'docker run -itd -p 8081:8080 anvbhaskar/springboot:0.0.3'
-            }
-        }
-
-        
+         
         stage('Archving') { 
             steps {
                  archiveArtifacts '**/target/*.jar'
