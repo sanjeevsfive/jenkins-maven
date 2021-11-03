@@ -1,3 +1,3 @@
-# jenkins-maven - project
+# jenkins-maven - project is good
 
 # sudo usermod -aG docker jenkins
